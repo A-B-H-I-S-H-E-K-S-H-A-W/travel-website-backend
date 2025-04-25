@@ -3,6 +3,10 @@ import { configDotenv } from "dotenv";
 import { mongoDBConnection } from "./db/db.js";
 configDotenv();
 
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+
 const port = process.env.PORT || 8000;
 
 mongoDBConnection()
@@ -17,6 +21,3 @@ mongoDBConnection()
     process.exit(1);
   });
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
