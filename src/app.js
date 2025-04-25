@@ -10,6 +10,6 @@ app.use(fu());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.use("/users", router);
+app.use("/api/v1/users", router);
 
 export default app;

@@ -3,4 +3,9 @@ import { userAPI } from "../controllers/user.controller.js";
 
 export const router = Router();
 
-router.get("/", userAPI.getusers);
+// // Auth routes
+// router.post("/auth", userAPI.loginusers);
+// router.post("/register", userAPI.registerusers);
+
+// // User data routes
+router.get("/:id", userAPI.getuser);
