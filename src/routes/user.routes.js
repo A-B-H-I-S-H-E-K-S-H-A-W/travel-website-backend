@@ -1,11 +1,12 @@
 import { Router } from "express";
-import { userAPI } from "../controllers/user.controller.js";
+import {
+  
+  loginuser,
+  registeruser,
+} from "../controllers/user.controller.js";
 
-export const router = Router();
+export const userRouter = Router();
 
-// // Auth routes
-router.post("/auth", userAPI.loginuser);
-router.post("/register", userAPI.registeruser);
-
-// // User data routes
-router.get("/:id", userAPI.getuser);
+userRouter.post("/auth", loginuser);
+userRouter.post("/register", registeruser);
+// userRouter.get("/:id", getuser);
