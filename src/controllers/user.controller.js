@@ -1,5 +1,6 @@
 import { User } from "../models/user.models.js";
-import hashPassword from "../utils/hashPassword.js";
+import Decrypt from "../utils/Decrypt.js";
+import Encrypt from "../utils/Encrypt.js";
 
 export async function getuser(req, res) {
   try {
@@ -23,10 +24,10 @@ export async function registeruser(req, res) {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({ message: "User already exists" });
     }
 
-    const hashedPassword = await hashPassword(password);
+    const hashedPassword = await Encrypt(password);
 
     const newUser = new User({
       username,
@@ -46,5 +47,30 @@ export async function registeruser(req, res) {
 export async function loginuser(req, res) {
   try {
     const { email, password } = req.body;
-  } catch (error) {}
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ message: "User dosen't exists" });
+    }
+
+    await Decrypt(password, user.password)
+      .then((isMatch) => {
+        if (isMatch) {
+          res.status(200).json({
+            message: "Login Successfully",
+            user: { id: user._id, username: user.username, user: user.email },
+          });
+        } else {
+          res.status(400).json({ message: "Login Failed, Password Incorrect" });
+        }
+      })
+      .catch((error) => {
+        console.log("Error during password decryption ::::", error);
+        res.status(500).json({ message: "Server Error" });
+      });
+  } catch (error) {
+    console.log("ERROR CREATING USER :::", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 }

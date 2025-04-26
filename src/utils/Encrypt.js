@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 
-async function hashPassword(password) {
+async function Encrypt(password) {
   try {
     const salt = await bcrypt.genSalt(10); // Salt rounds (security factor)
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -11,4 +11,4 @@ async function hashPassword(password) {
   }
 }
 
-export default hashPassword;
+export default Encrypt;
