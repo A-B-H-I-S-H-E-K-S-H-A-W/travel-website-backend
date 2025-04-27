@@ -9,7 +9,7 @@ export async function isAuthenticated(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, process.env.USER_JWT_SECRET);
-    req.user = decoded; // Attach user info from token to request
+    req.user = decoded;
     next();
   } catch (error) {
     return res.status(401).json({ message: "Unauthorized: Invalid token" });
