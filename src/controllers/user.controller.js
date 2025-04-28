@@ -70,6 +70,7 @@ export async function loginuser(req, res) {
           res.status(200).json({
             message: "Login Successfully",
             token,
+            user: { id: user._id, username: user.username, email: user.email },
           });
         } else {
           res.status(400).json({ message: "Login Failed, Password Incorrect" });
