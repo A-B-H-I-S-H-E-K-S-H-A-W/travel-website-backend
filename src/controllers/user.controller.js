@@ -39,7 +39,7 @@ export async function registeruser(req, res) {
 
     await newUser.save();
 
-    res.status(201).json("User successfully registered");
+    res.status(201).json({ message: "User successfully registered" });
   } catch (error) {
     console.log("ERROR CREATING USER :::", error);
     res.status(500).json({ message: "Internal server error" });
