@@ -76,3 +76,21 @@ export async function loginadmin(req, res) {
     res.status(500).json({ message: "Internal server error" });
   }
 }
+
+export async function adminprofile(req, res) {
+  try {
+    const admin = await Admin.findOne({ _id: req.user.id }).select("-password");
+
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    res.status(200).json({
+      id: admin._id,
+      username: admin.username, // work starts from here...
+    });
+  } catch (error) {
+    console.log("Error fetching admin data ::::", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}

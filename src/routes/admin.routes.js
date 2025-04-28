@@ -1,11 +1,13 @@
 import { Router } from "express";
-import { loginadmin, registeradmin } from "../controllers/admin.controller.js";
+import {
+  adminprofile,
+  loginadmin,
+  registeradmin,
+} from "../controllers/admin.controller.js";
+import { isAdminAuthenticated } from "../middleware/adminAuthMiddleware.js";
 
 export const adminRouter = Router();
 
-adminRouter.get("/", (req, res) => {
-  res.send("Hello");
-});
-
 adminRouter.post("/register", registeradmin);
 adminRouter.post("/auth", loginadmin);
+adminRouter.get("/profile", isAdminAuthenticated, adminprofile);
