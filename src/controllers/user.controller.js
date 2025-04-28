@@ -1,6 +1,8 @@
 import { User } from "../models/user.models.js";
 import Decrypt from "../utils/Decrypt.js";
 import Encrypt from "../utils/Encrypt.js";
+import ImageUploader from "../utils/ImageUploader.js";
+import jwt from "jsonwebtoken";
 
 export async function getuser(req, res) {
   try {
@@ -57,8 +59,17 @@ export async function loginuser(req, res) {
     await Decrypt(password, user.password)
       .then((isMatch) => {
         if (isMatch) {
+          const token = jwt.sign(
+            { id: user._id },
+            process.env.USER_JWT_SECRET,
+            {
+              expiresIn: process.env.USER_JWT_EXPIRE,
+            }
+          );
+
           res.status(200).json({
             message: "Login Successfully",
+            token,
             user: { id: user._id, username: user.username, user: user.email },
           });
         } else {
@@ -72,5 +83,32 @@ export async function loginuser(req, res) {
   } catch (error) {
     console.log("ERROR CREATING USER :::", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function updateuser(req, res) {
+  try {
+    const { username, email, phoneNumber } = req.body;
+    const avatar = req.files?.avatar;
+
+    const updateUser = { username, email, phoneNumber, avatar };
+
+    if (avatar) {
+      const avatarPath = await ImageUploader(avatar);
+      updateUser.avatar = avatarPath;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(req.user.id, updateUser, {
+      new: true,
+      runValidators: true,
+    }).select("-password");
+
+    res.status(200).json({
+      message: "User successfully updated",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Update user error:", error);
+    res.status(500).json({ message: "Server Error" });
   }
 }
