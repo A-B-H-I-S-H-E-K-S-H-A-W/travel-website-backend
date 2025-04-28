@@ -53,7 +53,7 @@ const adminSchema = Schema({
     default: "Not Verified",
     required: true,
   },
-  Domain: {
+  domain: {
     type: String,
     enum: ["Bus", "Flight", "Hotel"],
     required: true,
