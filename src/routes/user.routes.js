@@ -11,5 +11,9 @@ export const userRouter = Router();
 
 userRouter.post("/auth", loginuser);
 userRouter.post("/register", registeruser);
-userRouter.get("/:id", isAuthenticated, getuser);
-userRouter.post("/update", isAuthenticated, updateuser);
+userRouter.get("/:id", isAuthenticated(process.env.USER_JWT_SECRET), getuser);
+userRouter.post(
+  "/update",
+  isAuthenticated(process.env.USER_JWT_SECRET),
+  updateuser
+);
