@@ -2,6 +2,7 @@ import { Admin } from "../models/admin.models.js";
 import Decrypt from "../utils/Decrypt.js";
 import Encrypt from "../utils/Encrypt.js";
 import jwt from "jsonwebtoken";
+import FileUploader from "../utils/FileUploader.js";
 
 export async function registeradmin(req, res) {
   try {
@@ -87,10 +88,77 @@ export async function adminprofile(req, res) {
 
     res.status(200).json({
       id: admin._id,
-      username: admin.username, // work starts from here...
+      username: admin.username,
+      email: admin.email,
+      phoneNumber: admin.phoneNumber,
+      companyName: admin.companyName,
+      address: admin.address,
+      pincode: admin.pincode,
+      city: admin.city,
+      state: admin.state,
+      country: admin.country,
+      pancardNumber: admin.pancardNumber,
+      gstNumber: admin.gstNumber,
+      domain: admin.domain,
     });
   } catch (error) {
     console.log("Error fetching admin data ::::", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function updateadmin(req, res) {
+  try {
+    const {
+      username,
+      email,
+      phoneNumber,
+      companyName,
+      address,
+      pincode,
+      city,
+      state,
+      country,
+      pancardNumber,
+      gstNumber,
+    } = req.body;
+
+    const updateAdmin = {
+      username,
+      email,
+      phoneNumber,
+      companyName,
+      address,
+      pincode,
+      city,
+      state,
+      country,
+      pancardNumber,
+      gstNumber,
+      verification: "Verification Pending",
+    };
+
+    const license = req.files?.license;
+
+    if (license) {
+      const uploadLicense = await FileUploader(license);
+      updateAdmin.license = uploadLicense;
+    }
+
+    const updatedAdmin = await Admin.findByIdAndUpdate(
+      req.user.id,
+      updateAdmin,
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).select("-password");
+
+    res
+      .status(200)
+      .json({ message: "Admin successfully updated", admin: updatedAdmin });
+  } catch (error) {
+    console.log("Can't update admin ::::", error);
     res.status(500).json({ message: "Internal server error" });
   }
 }
