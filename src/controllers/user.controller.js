@@ -1,7 +1,7 @@
 import { User } from "../models/user.models.js";
 import Decrypt from "../utils/Decrypt.js";
 import Encrypt from "../utils/Encrypt.js";
-import ImageUploader from "../utils/ImageUploader.js";
+import FileUploader from "../utils/FileUploader.js";
 import jwt from "jsonwebtoken";
 
 export async function getuser(req, res) {
@@ -94,7 +94,7 @@ export async function updateuser(req, res) {
     const updateUser = { username, email, phoneNumber, avatar };
 
     if (avatar) {
-      const avatarPath = await ImageUploader(avatar);
+      const avatarPath = await FileUploader(avatar);
       updateUser.avatar = avatarPath;
     }
 
