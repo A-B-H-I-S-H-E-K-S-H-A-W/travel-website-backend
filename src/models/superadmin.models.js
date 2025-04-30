@@ -17,7 +17,10 @@ const superAdminSchema = new Schema(
       type: String,
       min: 8,
     },
-    loginCodes: [{ type: String }],
+    loginCode: {
+      type: String,
+      max: 5,
+    },
   },
   {
     timestamps: true,
