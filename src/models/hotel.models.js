@@ -1,6 +1,11 @@
-import { Schema, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
 
 const busSchema = new Schema({
+  owner: {
+    type: Types.ObjectId,
+    ref: "Admin",
+    required: true,
+  },
   busNumber: {
     type: String,
     required: true,
