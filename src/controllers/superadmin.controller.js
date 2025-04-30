@@ -9,7 +9,7 @@ export async function registerSuperAdmin(req, res) {
       username: process.env.SUPERADMIN_USERNAME,
       email: process.env.SUPERADMIN_EMAIL,
       password: process.env.SUPERADMIN_PASSWORD,
-      loginCodes: [process.env.SUPERADMIN_LOGINCODE],
+      loginCode: process.env.SUPERADMIN_LOGINCODE,
     };
 
     const existingSuperAdmin = await SuperAdmin.findOne({
@@ -23,7 +23,7 @@ export async function registerSuperAdmin(req, res) {
         username: superAdmin.username,
         email: superAdmin.email,
         password: hashedPassword,
-        loginCodes: superAdmin.loginCodes,
+        loginCode: superAdmin.loginCode,
       });
 
       await newSuperAdmin.save();
@@ -41,7 +41,7 @@ export async function loginSuperAdmin(req, res) {
 
     const superadmin = await SuperAdmin.findOne({
       email,
-      loginCodes: loginCode,
+      loginCode: loginCode,
     });
 
     if (!superadmin) {
@@ -72,6 +72,55 @@ export async function loginSuperAdmin(req, res) {
     });
   } catch (error) {
     console.log("CAN'T LOGIN ::::", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function newSuperAdmin(req, res) {
+  try {
+    const { username, email, password, loginCode } = req.body;
+
+    const existingSuperAdmin = await SuperAdmin.findOne({
+      email,
+      loginCode: loginCode,
+    });
+
+    if (existingSuperAdmin) {
+      return res.status(400).json({ message: "Super Admin already exists" });
+    }
+
+    const hashedPassword = await Encrypt(password);
+
+    const newSuperAdmin = new SuperAdmin({
+      username,
+      email,
+      password: hashedPassword,
+      loginCode: loginCode,
+    });
+
+    await newSuperAdmin.save();
+
+    res.status(201).json({
+      message: "Super Admin successfully created",
+      superAdmin: {
+        username,
+        email,
+        password,
+        loginCode,
+      },
+    });
+  } catch (error) {
+    console.log("Error adding new super admin ::::", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function getSuperAdminProfile(req, res) {
+  try {
+    const superAdmins = await SuperAdmin.find();
+    res.status(200).json(superAdmins);
+  } catch (error) {
+    console.log("Error getting Super Admin data ::::", error);
     res.status(500).json({ message: "Internal server error" });
   }
 }
