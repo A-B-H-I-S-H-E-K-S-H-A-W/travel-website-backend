@@ -1,7 +1,9 @@
 import app from "./app.js";
-import { configDotenv } from "dotenv";
+import dotenv from "dotenv";
 import { mongoDBConnection } from "./db/db.js";
-configDotenv();
+dotenv.config({
+  path: "./.env",
+});
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
@@ -20,4 +22,3 @@ mongoDBConnection()
     console.log("MONGO DB CONNECTION FAILURE::::....", error);
     process.exit(1);
   });
-
