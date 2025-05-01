@@ -3,6 +3,8 @@ import Decrypt from "../utils/Decrypt.js";
 import Encrypt from "../utils/Encrypt.js";
 import FileUploader from "../utils/FileUploader.js";
 import jwt from "jsonwebtoken";
+import fs from "fs";
+import UnlinkFile from "../utils/UnlinkFile.js";
 
 export async function getuser(req, res) {
   try {
@@ -92,6 +94,10 @@ export async function updateuser(req, res) {
     const avatar = req.files?.avatar;
 
     const updateUser = { username, email, phoneNumber, avatar };
+
+    const user = await User.findById(req.user.id);
+
+    UnlinkFile(user.avatar);
 
     if (avatar) {
       const avatarPath = await FileUploader(avatar);
