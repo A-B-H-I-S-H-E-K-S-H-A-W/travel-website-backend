@@ -3,7 +3,7 @@ import fs from "fs";
 const UnlinkFile = (file) => {
   if (file) {
     try {
-      fs.unlinkSync("./src/public/images/" + file);
+      fs.unlinkSync("./src/public/temp/" + file);
     } catch (error) {
       console.log(error);
     }
