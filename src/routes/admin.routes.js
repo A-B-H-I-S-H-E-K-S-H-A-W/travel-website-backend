@@ -5,11 +5,11 @@ import {
   registeradmin,
   updateadmin,
 } from "../controllers/admin.controller.js";
-import { isAdminAuthenticated } from "../middleware/adminAuthMiddleware.js";
+import { authenticate } from "../middleware/authenticate.js";
 
 export const adminRouter = Router();
 
 adminRouter.post("/register", registeradmin);
 adminRouter.post("/auth", loginadmin);
-adminRouter.get("/profile", isAdminAuthenticated, adminprofile);
-adminRouter.post("/update", isAdminAuthenticated, updateadmin);
+adminRouter.get("/profile", authenticate("admin"), adminprofile);
+adminRouter.post("/update", authenticate("admin"), updateadmin);

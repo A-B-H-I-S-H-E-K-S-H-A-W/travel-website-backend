@@ -5,10 +5,19 @@ import {
   newSuperAdmin,
   registerSuperAdmin,
 } from "../controllers/superadmin.controller.js";
+import { authenticate } from "../middleware/authenticate.js";
 
 export const superAdminRouter = Router();
 
 superAdminRouter.post("/register-once", registerSuperAdmin);
 superAdminRouter.post("/auth", loginSuperAdmin);
-superAdminRouter.post("/new-registration", newSuperAdmin);
-superAdminRouter.get("/get-super-admins", getSuperAdminProfile);
+superAdminRouter.post(
+  "/new-registration",
+  authenticate("superadmin"),
+  newSuperAdmin
+);
+superAdminRouter.get(
+  "/get-super-admins",
+  authenticate("superadmin"),
+  getSuperAdminProfile
+);
