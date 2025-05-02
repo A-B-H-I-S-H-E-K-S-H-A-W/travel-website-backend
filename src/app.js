@@ -4,6 +4,7 @@ import fu from "express-fileupload";
 import { userRouter } from "./routes/user.routes.js";
 import { adminRouter } from "./routes/admin.routes.js";
 import { superAdminRouter } from "./routes/superadmin.routes.js";
+import { busRouter } from "./routes/bus.routes.js";
 
 const app = express();
 
@@ -17,5 +18,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/users", userRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/super-admin", superAdminRouter);
+app.use("/api/bus", busRouter);
 
 export default app;
