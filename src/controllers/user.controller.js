@@ -97,9 +97,8 @@ export async function updateuser(req, res) {
 
     const user = await User.findById(req.user.id);
 
-    UnlinkFile(user.avatar);
-
     if (avatar) {
+      UnlinkFile(user.avatar);
       const avatarPath = await FileUploader(avatar);
       updateUser.avatar = avatarPath;
     }
