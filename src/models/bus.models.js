@@ -46,16 +46,12 @@ const busSchema = new Schema(
       type: Number,
       required: true,
     },
-    bookedSeats: {
-      type: Number,
-      required: true,
-    },
     fare: {
       type: Number,
       required: true,
     },
     busType: {
-      type: String,
+      type: [String],
       required: true,
       enum: ["AC Sleeper", "Non-AC Seater", "Sleeper", "AC Seater"],
     },
@@ -67,6 +63,7 @@ const busSchema = new Schema(
     images: {
       type: [String],
       default: [],
+      required: true,
     },
     isActive: {
       type: Boolean,
