@@ -6,8 +6,8 @@ import {
   getBusData,
   getSingleBusData,
   updateBusData,
-} from "../controllers/bus.controller";
-import { authenticate } from "../middleware/authenticate";
+} from "../controllers/bus.controller.js";
+import { authenticate } from "../middleware/authenticate.js";
 
 export const busRouter = Router();
 

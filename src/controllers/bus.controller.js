@@ -4,69 +4,77 @@ import FileUploader from "../utils/FileUploader.js";
 import fs from "fs";
 import path from "path";
 import UnlinkFile from "../utils/UnlinkFile.js";
+import { duration } from "../utils/Duration.js";
 
 export async function createBus(req, res) {
   try {
-    const {
-      busNumber,
-      busName,
-      source,
-      destination,
-      departureTime,
-      arrivalTime,
-      duration,
-      totalSeats,
-      availableSeats,
-      fare,
-      busType,
-      operatingDays,
-      isActive,
-    } = req.body;
+    const owner = await Admin.findOne({ _id: req.user.id }).select("-password");
 
-    const imageFiles = req.files?.images;
-    let imagePath = [];
+    if (owner.verification === "Not Verified") {
+      const {
+        busNumber,
+        busName,
+        source,
+        destination,
+        departureTime,
+        arrivalTime,
+        totalSeats,
+        fare,
+        busType,
+        operatingDays,
+        isActive,
+      } = req.body;
 
-    if (!imageFiles) {
-      return res.status(400).json({ message: "No images uploaded" });
-    }
+      const imageFiles = req.files?.images;
+      let imagePath = [];
 
-    if (Array.isArray(imageFiles)) {
-      for (const image of imageFiles) {
-        const fileName = await FileUploader(image);
+      if (!imageFiles) {
+        return res.status(400).json({ message: "No images uploaded" });
+      }
+
+      if (Array.isArray(imageFiles)) {
+        for (const image of imageFiles) {
+          const fileName = await FileUploader(image);
+          imagePath.push(fileName);
+        }
+      } else {
+        const fileName = await FileUploader(imageFiles);
         imagePath.push(fileName);
       }
+
+      const availableBusSeats = totalSeats;
+
+      const totalDuration = duration(departureTime, arrivalTime);
+      console.log(totalDuration);
+
+      const newBus = await Bus.create({
+        owner: owner._id,
+        busNumber,
+        busName,
+        source,
+        destination,
+        departureTime,
+        arrivalTime,
+        duration: totalDuration,
+        totalSeats,
+        availableSeats: availableBusSeats,
+        images: imagePath,
+        fare,
+        busType,
+        operatingDays,
+        isActive,
+      });
+
+      await newBus.save();
+
+      res.status(201).json({
+        message: "Bus scheduled successfully",
+        bus: newBus,
+        owner: owner,
+      });
     } else {
-      const fileName = await FileUploader(imageFiles);
-      imagePath.push(fileName);
+      res.status(404).json({ message: "Admin is not verified" });
     }
-
-    const owner = await Admin.findOne(req.user.id).select("-password");
-
-    const newBus = await Bus.create({
-      owner: owner._id,
-      busNumber,
-      busName,
-      source,
-      destination,
-      departureTime,
-      arrivalTime,
-      duration,
-      totalSeats,
-      availableSeats,
-      images: imagePath,
-      fare,
-      busType,
-      operatingDays,
-      isActive,
-    });
-
-    await newBus.save();
-
-    res.status(201).json({
-      message: "Bus scheduled successfully",
-      bus: newBus,
-      owner: owner,
-    });
   } catch (error) {
     console.log("Error creating bus schedule ::::", error);
     res.status(500).json({ message: "Internal server error" });
@@ -109,9 +117,12 @@ export async function getSingleBusData(req, res) {
 
 export async function getActiveBusData(req, res) {
   try {
-    const isActive = req.body;
+    const isActive = req.body.isActive;
 
-    const buses = await Bus.find({ isActive }).populate("owner", "-password");
+    const buses = await Bus.find({ isActive: isActive }).populate(
+      "owner",
+      "-password"
+    );
 
     if (buses.length === 0) {
       return res.status(400).json({ message: "No bus data found" });
@@ -163,7 +174,6 @@ export async function updateBusData(req, res) {
       arrivalTime,
       duration,
       totalSeats,
-      availableSeats,
       fare,
       busType,
       operatingDays,
@@ -194,6 +204,8 @@ export async function updateBusData(req, res) {
       }
     }
 
+    const totalDuration = duration(departureTime, arrivalTime);
+
     const updateBus = {
       busNumber,
       busName,
@@ -201,9 +213,8 @@ export async function updateBusData(req, res) {
       destination,
       departureTime,
       arrivalTime,
-      duration,
+      duration: totalDuration,
       totalSeats,
-      availableSeats,
       images: imagePath.length ? imagePath : bus.images,
       fare,
       busType,
