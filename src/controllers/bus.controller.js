@@ -135,6 +135,21 @@ export async function getActiveBusData(req, res) {
   }
 }
 
+export async function getAllBusData(req, res) {
+  try {
+    const buses = await Bus.find().populate("owner", "-password");
+
+    if (buses.length === 0) {
+      return res.status(400).json({ message: "No bus data found" });
+    }
+
+    res.status(200).json(buses);
+  } catch (error) {
+    console.log("Error fetching bus data ::::", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 export async function deleteBusData(req, res) {
   try {
     const busId = req.params.id;
@@ -172,7 +187,6 @@ export async function updateBusData(req, res) {
       destination,
       departureTime,
       arrivalTime,
-      duration,
       totalSeats,
       fare,
       busType,

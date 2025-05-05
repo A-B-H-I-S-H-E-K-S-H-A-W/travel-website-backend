@@ -3,6 +3,7 @@ import {
   createBus,
   deleteBusData,
   getActiveBusData,
+  getAllBusData,
   getBusData,
   getSingleBusData,
   updateBusData,
@@ -14,6 +15,7 @@ export const busRouter = Router();
 busRouter.post("/create", authenticate("admin"), createBus);
 busRouter.get("/buses", authenticate("admin"), getBusData);
 busRouter.post("/active-buses", getActiveBusData);
+busRouter.get("/all-buses", authenticate("user"), getAllBusData);
 busRouter.post("/:id", getSingleBusData);
-busRouter.delete("delete/:id", authenticate("admin"), deleteBusData);
+busRouter.delete("/delete/:id", authenticate("admin"), deleteBusData);
 busRouter.put("/update", authenticate("admin"), updateBusData);
