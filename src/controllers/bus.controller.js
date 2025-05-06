@@ -10,7 +10,7 @@ export async function createBus(req, res) {
   try {
     const owner = await Admin.findOne({ _id: req.user.id }).select("-password");
 
-    if (owner.verification === "Not Verified") {
+    if (owner.verification === "Verified") {
       const {
         busNumber,
         busName,
