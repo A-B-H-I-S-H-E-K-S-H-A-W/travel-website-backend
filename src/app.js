@@ -5,6 +5,7 @@ import { userRouter } from "./routes/user.routes.js";
 import { adminRouter } from "./routes/admin.routes.js";
 import { superAdminRouter } from "./routes/superadmin.routes.js";
 import { busRouter } from "./routes/bus.routes.js";
+import { hotelRouter } from "./routes/hotel.routes.js";
 
 const app = express();
 
@@ -19,5 +20,6 @@ app.use("/api/users", userRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/super-admin", superAdminRouter);
 app.use("/api/bus", busRouter);
+app.use("/api/hotel", hotelRouter);
 
 export default app;
