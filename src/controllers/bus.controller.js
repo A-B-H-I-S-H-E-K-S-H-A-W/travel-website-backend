@@ -1,8 +1,6 @@
 import { Admin } from "../models/admin.models.js";
 import { Bus } from "../models/bus.models.js";
 import FileUploader from "../utils/FileUploader.js";
-import fs from "fs";
-import path from "path";
 import UnlinkFile from "../utils/UnlinkFile.js";
 import { duration } from "../utils/Duration.js";
 
@@ -10,7 +8,7 @@ export async function createBus(req, res) {
   try {
     const owner = await Admin.findOne({ _id: req.user.id }).select("-password");
 
-    if (owner.verification === "Verified") {
+    if (owner.verification === "Verified" && owner.domain === "Bus") {
       const {
         busNumber,
         busName,
