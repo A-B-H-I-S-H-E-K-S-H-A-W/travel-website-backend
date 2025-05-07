@@ -83,7 +83,7 @@ export const Hotel = model("Hotel", hotelSchema);
 
 const roomSchema = Schema(
   {
-    owner: {
+    hotel: {
       type: Types.ObjectId,
       ref: "Hotel",
       required: true,
@@ -104,8 +104,13 @@ const roomSchema = Schema(
     discount: {
       type: Number,
       required: true,
+      default: 1,
     },
     price: {
+      type: Number,
+      required: true,
+    },
+    discountedAmount: {
       type: Number,
       required: true,
     },
@@ -116,6 +121,11 @@ const roomSchema = Schema(
     },
     image: {
       type: String,
+      required: true,
+    },
+    booked: {
+      type: Boolean,
+      default: false,
       required: true,
     },
   },
