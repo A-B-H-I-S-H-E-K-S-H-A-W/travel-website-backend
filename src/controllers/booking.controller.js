@@ -56,7 +56,7 @@ export async function booking(req, res) {
     }
 
     const newBooking = new Booking({
-      user,
+      user: req.user.id,
       travelDate,
       bus: bus || null,
       hotel: hotel || null,
