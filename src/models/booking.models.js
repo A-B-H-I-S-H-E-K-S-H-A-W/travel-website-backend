@@ -1,18 +1,16 @@
-// const mongoose = require("mongoose");
+import { Schema, Types, model } from "mongoose";
 
-// const bookingSchema = new mongoose.Schema({
-//   user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-//   bookedAt: { type: Date, default: Date.now },
-//   travelDate: { type: Date, required: true },
+const bookingSchema = new Schema({
+  user: { type: Types.ObjectId, ref: "User", required: true },
+  bookedAt: { type: Date, default: Date.now },
+  travelDate: { type: Date, required: true },
+  bus: { type: Types.ObjectId, ref: "Bus", default: null },
+  hotel: { type: Types.ObjectId, ref: "Hotel", default: null },
+  flight: {
+    type: Types.ObjectId,
+    ref: "Flight",
+    default: null,
+  },
+});
 
-//   // Optional references depending on what's booked
-//   bus: { type: mongoose.Schema.Types.ObjectId, ref: "Bus", default: null },
-//   hotel: { type: mongoose.Schema.Types.ObjectId, ref: "Hotel", default: null },
-//   flight: {
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: "Flight",
-//     default: null,
-//   },
-// });
-
-// module.exports = mongoose.model("Booking", bookingSchema);
+export const Booking = model("Booking", bookingSchema);
