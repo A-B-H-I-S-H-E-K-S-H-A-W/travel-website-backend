@@ -54,7 +54,7 @@ const flightSchema = Schema({
     type: Number,
     required: true,
   },
-  seatsAvailable: {
+  availableSeats: {
     type: Number,
     required: true,
   },

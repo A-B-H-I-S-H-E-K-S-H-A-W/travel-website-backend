@@ -63,7 +63,7 @@ export async function createFlight(req, res) {
         duration: totalDuration,
         classType,
         totalSeats,
-        seatsAvailable: availableFlightSeats,
+        availableSeats: availableFlightSeats,
         mealIncluded,
         price,
         discount,
