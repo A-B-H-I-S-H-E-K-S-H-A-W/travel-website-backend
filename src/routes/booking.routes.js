@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { Booking } from "../models/booking.models.js";
 import { authenticate } from "../middleware/authenticate.js";
+import { booking } from "../controllers/booking.controller.js";
 
 export const bookingRouter = Router();
 
-bookingRouter.post("/book", authenticate("user"), Booking);
+bookingRouter.post("/book", authenticate("user"), booking);

@@ -4,7 +4,7 @@ import { Flight } from "../models/flight.models.js";
 
 export async function booking(req, res) {
   try {
-    const { bus, hotel, flight } = req.body;
+    const { travelDate, bus, hotel, flight } = req.body;
 
     const bookingTypes = [bus, hotel, flight].filter(Boolean);
     if (bookingTypes.length !== 1) {
@@ -47,12 +47,6 @@ export async function booking(req, res) {
 
       await Flight.findByIdAndUpdate(flight, { availableSeats: updatedSeats });
       console.log(`Seat booked. Remaining seats: ${updatedSeats}`);
-    }
-
-    if (!user || !travelDate) {
-      return res
-        .status(400)
-        .json({ message: "User and travelDate are required" });
     }
 
     const newBooking = new Booking({
