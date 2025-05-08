@@ -1,4 +1,4 @@
-import { Booking } from "../models/booking.models";
+import { Booking } from "../models/booking.models.js";
 import { Bus } from "../models/bus.models.js";
 import { Flight } from "../models/flight.models.js";
 
