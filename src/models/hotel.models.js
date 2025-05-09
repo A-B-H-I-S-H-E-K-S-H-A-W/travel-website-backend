@@ -123,6 +123,10 @@ const roomSchema = Schema(
       type: String,
       required: true,
     },
+    totalRooms: {
+      type: Number,
+      required: true,
+    },
     booked: {
       type: Boolean,
       default: false,

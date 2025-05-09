@@ -65,6 +65,11 @@ const busSchema = new Schema(
       default: [],
       required: true,
     },
+    booked: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     isActive: {
       type: Boolean,
       required: true,

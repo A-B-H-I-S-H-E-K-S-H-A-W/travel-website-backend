@@ -84,6 +84,11 @@ const flightSchema = Schema({
     required: true,
     enum: ["Scheduled", "Delayed", "Cancelled", "Completed"],
   },
+  booked: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
   isActive: {
     type: Boolean,
     required: true,
