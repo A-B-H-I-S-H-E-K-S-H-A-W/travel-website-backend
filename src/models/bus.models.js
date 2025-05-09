@@ -56,7 +56,7 @@ const busSchema = new Schema(
       enum: ["AC Sleeper", "Non-AC Seater", "Sleeper", "AC Seater"],
     },
     operatingDays: {
-      type: String,
+      type: [String],
       required: true,
       enum: ["Mon", "Tue", "Wed", "Thus", "Fri", "Sat", "Sun"],
     },
