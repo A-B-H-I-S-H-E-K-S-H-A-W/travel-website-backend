@@ -88,6 +88,10 @@ export async function loginuser(req, res) {
   }
 }
 
+export async function userLogout(req, res) {
+  res.status(200).json({ message: "Logged out successfully" });
+}
+
 export async function updateuser(req, res) {
   try {
     const {

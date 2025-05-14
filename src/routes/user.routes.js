@@ -4,6 +4,7 @@ import {
   loginuser,
   registeruser,
   updateuser,
+  userLogout,
 } from "../controllers/user.controller.js";
 import { authenticate } from "../middleware/authenticate.js";
 
@@ -13,3 +14,4 @@ userRouter.post("/auth", loginuser);
 userRouter.post("/register", registeruser);
 userRouter.get("/:id", authenticate("user"), getuser);
 userRouter.post("/update", authenticate("user"), updateuser);
+userRouter.get("/logout", userLogout);
