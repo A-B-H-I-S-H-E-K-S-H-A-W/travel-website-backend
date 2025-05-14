@@ -90,10 +90,29 @@ export async function loginuser(req, res) {
 
 export async function updateuser(req, res) {
   try {
-    const { username, email, phoneNumber } = req.body;
+    const {
+      username,
+      email,
+      phoneNumber,
+      country,
+      address,
+      city,
+      state,
+      pincode,
+    } = req.body;
     const avatar = req.files?.avatar;
 
-    const updateUser = { username, email, phoneNumber, avatar };
+    const updateUser = {
+      username,
+      email,
+      phoneNumber,
+      avatar,
+      country,
+      address,
+      city,
+      state,
+      pincode,
+    };
 
     const user = await User.findById(req.user.id);
 
