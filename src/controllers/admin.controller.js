@@ -26,7 +26,9 @@ export async function registeradmin(req, res) {
     });
 
     await newAdmin.save();
-    res.status(201).json({ message: "Admin successfully registered" });
+    res
+      .status(201)
+      .json({ success: true, message: "Admin successfully registered" });
   } catch (error) {
     console.log("Admin registration error ::::", error);
     res.status(500).json({ message: "Internal server error" });
@@ -55,6 +57,7 @@ export async function loginadmin(req, res) {
           );
 
           res.status(200).json({
+            success: true,
             message: "Login Successfully",
             token,
             admin: {
@@ -76,6 +79,10 @@ export async function loginadmin(req, res) {
     console.log("ERROR CREATING USER :::", error);
     res.status(500).json({ message: "Internal server error" });
   }
+}
+
+export async function adminLogout(req, res) {
+  res.status(200).json({success: true, message: "Logged out successfully" });
 }
 
 export async function adminprofile(req, res) {
