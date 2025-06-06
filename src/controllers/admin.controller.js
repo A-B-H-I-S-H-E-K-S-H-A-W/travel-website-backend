@@ -65,6 +65,7 @@ export async function loginadmin(req, res) {
               username: admin.username,
               email: admin.email,
               domain: admin.domain,
+              verification: admin.verification,
             },
           });
         } else {
@@ -82,12 +83,13 @@ export async function loginadmin(req, res) {
 }
 
 export async function adminLogout(req, res) {
-  res.status(200).json({success: true, message: "Logged out successfully" });
+  res.status(200).json({ success: true, message: "Logged out successfully" });
 }
 
 export async function adminprofile(req, res) {
   try {
-    const admin = await Admin.findOne({ _id: req.user.id }).select("-password");
+    const id = req.user.id;
+    const admin = await Admin.findOne({ _id: id }).select("-password");
 
     if (!admin) {
       return res.status(404).json({ message: "Admin not found" });
@@ -95,6 +97,7 @@ export async function adminprofile(req, res) {
 
     res.status(200).json({
       id: admin._id,
+      verification: admin.verification,
       username: admin.username,
       email: admin.email,
       phoneNumber: admin.phoneNumber,

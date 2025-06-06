@@ -53,11 +53,11 @@ const hotelSchema = Schema(
       required: true,
     },
     checkInTime: {
-      type: Date,
+      type: String,
       required: true,
     },
     checkOutTime: {
-      type: Date,
+      type: String,
       required: true,
     },
     isActive: {
@@ -68,10 +68,6 @@ const hotelSchema = Schema(
       type: [String],
       default: [],
       required: true,
-    },
-    totalBookings: {
-      type: Number,
-      default: 0,
     },
   },
   {

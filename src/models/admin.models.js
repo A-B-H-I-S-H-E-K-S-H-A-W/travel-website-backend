@@ -50,7 +50,7 @@ const adminSchema = Schema(
     },
     verification: {
       type: String,
-      enum: ["Not Verified", "Verification Pending", "Verified"],
+      enum: ["Not Verified", "Verification Pending", "Verified", "Denied"],
       default: "Not Verified",
       required: true,
     },
