@@ -41,11 +41,12 @@ export async function loginSuperAdmin(req, res) {
 
     const superadmin = await SuperAdmin.findOne({
       email,
-      loginCode: loginCode,
     });
 
     if (!superadmin) {
-      return res.status(400).json({ message: "Super Admin doesn't exist" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Super Admin doesn't exist" });
     }
 
     const isMatch = await Decrypt(password, superadmin.password);
@@ -66,6 +67,7 @@ export async function loginSuperAdmin(req, res) {
     };
 
     res.status(200).json({
+      success: true,
       message: "Super Admin successfully logged in",
       token,
       superadmin: safeAdmin,
@@ -74,6 +76,10 @@ export async function loginSuperAdmin(req, res) {
     console.log("CAN'T LOGIN ::::", error);
     res.status(500).json({ message: "Internal server error" });
   }
+}
+
+export async function superAdminLogout(req, res) {
+  res.status(200).json({ success: true, message: "Logged out successfully" });
 }
 
 export async function newSuperAdmin(req, res) {
@@ -118,6 +124,17 @@ export async function newSuperAdmin(req, res) {
 export async function getSuperAdminProfile(req, res) {
   try {
     const superAdmins = await SuperAdmin.find();
+    res.status(200).json(superAdmins);
+  } catch (error) {
+    console.log("Error getting Super Admin data ::::", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function superAdminProfile(req, res) {
+  try {
+    const id = req.user.id;
+    const superAdmins = await SuperAdmin.findById(id);
     res.status(200).json(superAdmins);
   } catch (error) {
     console.log("Error getting Super Admin data ::::", error);
