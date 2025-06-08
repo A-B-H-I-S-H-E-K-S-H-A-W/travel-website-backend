@@ -88,11 +88,12 @@ export async function newSuperAdmin(req, res) {
 
     const existingSuperAdmin = await SuperAdmin.findOne({
       email,
-      loginCode: loginCode,
     });
 
     if (existingSuperAdmin) {
-      return res.status(400).json({ message: "Super Admin already exists" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Super Admin already exists" });
     }
 
     const hashedPassword = await Encrypt(password);
