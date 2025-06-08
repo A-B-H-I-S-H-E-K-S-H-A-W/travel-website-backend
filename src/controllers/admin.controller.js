@@ -172,3 +172,28 @@ export async function updateadmin(req, res) {
     res.status(500).json({ message: "Internal server error" });
   }
 }
+
+export async function verification(req, res) {
+  try {
+    const { verification } = req.body;
+
+    const admin = await Admin.find({ verification: verification }).select(
+      "-password"
+    );
+
+    if (admin.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No Admin found" });
+    }
+
+    res.status(200).json({
+      admin: admin,
+      success: true,
+      message: "Admin found",
+    });
+  } catch (error) {
+    console.log("Can't find Data ::::", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+}

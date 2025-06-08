@@ -107,13 +107,8 @@ export async function newSuperAdmin(req, res) {
     await newSuperAdmin.save();
 
     res.status(201).json({
+      success: true,
       message: "Super Admin successfully created",
-      superAdmin: {
-        username,
-        email,
-        password,
-        loginCode,
-      },
     });
   } catch (error) {
     console.log("Error adding new super admin ::::", error);
