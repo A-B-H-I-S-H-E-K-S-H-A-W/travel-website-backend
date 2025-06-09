@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
+
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -18,9 +19,9 @@ async function FileUploader(image) {
     await image.mv(uploadPath);
 
     const result = await cloudinary.uploader.upload(uploadPath, {
-      folder: "uploads", // optional folder in Cloudinary
+      folder: "uploads",
       public_id: uniqueName,
-      resource_type: "raw",
+      resource_type: "raw", // add this for raw files like PDFs
     });
 
     fs.unlinkSync(uploadPath);
