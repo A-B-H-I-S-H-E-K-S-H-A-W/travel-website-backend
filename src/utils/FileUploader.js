@@ -1,3 +1,14 @@
+import { v2 as cloudinary } from "cloudinary";
+import fs from "fs";
+import dotenv from "dotenv";
+dotenv.config();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 async function FileUploader(image) {
   try {
     const uniqueName =
@@ -6,7 +17,15 @@ async function FileUploader(image) {
 
     await image.mv(uploadPath);
 
-    return uniqueName;
+    const result = await cloudinary.uploader.upload(uploadPath, {
+      folder: "uploads", // optional folder in Cloudinary
+      public_id: uniqueName,
+      resource_type: "raw",
+    });
+
+    fs.unlinkSync(uploadPath);
+
+    return result.secure_url;
   } catch (error) {
     console.log("Error while uploading the image :::", error);
     throw error;
