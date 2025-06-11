@@ -7,7 +7,7 @@ import { superAdminRouter } from "./routes/superadmin.routes.js";
 import { busRouter } from "./routes/bus.routes.js";
 import { hotelRouter } from "./routes/hotel.routes.js";
 import { flightRouter } from "./routes/flight.routes.js";
-import { bookingRouter } from "./routes/booking.routes.js";
+import { bookingRouter } from "./routes/booking.routes.js"; 
 
 const app = express();
 

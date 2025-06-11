@@ -137,3 +137,24 @@ export async function superAdminProfile(req, res) {
     res.status(500).json({ message: "Internal server error" });
   }
 }
+
+export const superAdminRemove = async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ message: "ID is required" });
+    }
+
+    const deleteAdmin = await SuperAdmin.findByIdAndDelete(id);
+
+    if (!deleteAdmin) {
+      return res.status(404).json({ message: "Super Admin not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Super Admin Deleted" });
+  } catch (error) {
+    console.log("Error removing Super Admin data ::::", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

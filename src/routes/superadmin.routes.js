@@ -6,6 +6,7 @@ import {
   registerSuperAdmin,
   superAdminLogout,
   superAdminProfile,
+  superAdminRemove,
 } from "../controllers/superadmin.controller.js";
 import { authenticate } from "../middleware/authenticate.js";
 
@@ -26,3 +27,4 @@ superAdminRouter.get(
 );
 
 superAdminRouter.get("/profile", authenticate("superadmin"), superAdminProfile);
+superAdminRouter.post("/remove", authenticate("superadmin"), superAdminRemove);

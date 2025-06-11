@@ -197,3 +197,37 @@ export async function verification(req, res) {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 }
+
+export async function verificationUpdate(req, res) {
+  try {
+    const { verificationUpdate } = req.body;
+    const id = req.user.id;
+
+    const admin = await Admin.find({ _id: id }).select("-password");
+
+    if (admin.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No Admin found" });
+    }
+
+    const updateAdmin = {
+      verification: verificationUpdate,
+    };
+
+    const updatedAdmin = await Admin.findByIdAndUpdate(id, updateAdmin, {
+      new: true,
+      runValidators: true,
+    }).select("-password");
+
+    return res.status(200).json({
+      success: true,
+      message: "Admin Verification Change . . .",
+    });
+  } catch (error) {
+    console.log("Can't find Data ::::", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+}
