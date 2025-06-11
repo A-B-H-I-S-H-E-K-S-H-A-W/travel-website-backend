@@ -49,10 +49,14 @@ export async function loginSuperAdmin(req, res) {
         .json({ success: false, message: "Super Admin doesn't exist" });
     }
 
-    const isMatch = await Decrypt(password, superadmin.password);
+    const isPasswordMatch = await Decrypt(password, superadmin.password);
+    const isCodeMatch = loginCode === superadmin.loginCode;
 
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid password" });
+    if (!isPasswordMatch || !isCodeMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid password or login code",
+      });
     }
 
     const token = jwt.sign(
