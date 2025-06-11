@@ -26,6 +26,14 @@ export async function createHotel(req, res) {
         isActive,
       } = req.body;
 
+      const existingHotel = await Hotel.findOne({ name });
+      if (existingHotel) {
+        return res.json({
+          success: false,
+          message: "Hotel with this name already exists",
+        });
+      }
+
       const imageFiles = req.files?.images;
       let imagePath = [];
 
@@ -62,20 +70,33 @@ export async function createHotel(req, res) {
       });
 
       await newHotel.save();
+
       res.status(201).json({
+        success: true,
         message: "Hotel created successfully",
       });
     } else {
-      console.log("Owner is not verified or domain dosen't matched");
-      res
-        .status(404)
-        .json({ message: "Owner is not verified or domain dosen't matched" });
+      console.log("Owner is not verified or domain doesn't match");
+      res.status(403).json({
+        success: false,
+        message: "Owner is not verified or domain doesn't match",
+      });
     }
   } catch (error) {
-    console.log("Cant create Hotel Data");
+    console.log("Can't create Hotel Data", error);
     res.status(500).json({ message: "Internal server error" });
   }
 }
+
+export const getAllHotels = async (req, res) => {
+  try {
+    const hotels = await Hotel.find(); // You can add filters like .find({ city: req.query.city })
+    res.status(200).json({ success: true, data: hotels });
+  } catch (error) {
+    console.error("Error fetching hotels:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
 
 // Create room
 
@@ -215,7 +236,7 @@ export async function getSingleHotelData(req, res) {
       return res.status(400).json({ message: "Hotel not found" });
     }
     const room = await Room.find({ hotel: hotelId });
-    res.status(200).json({ hotel: hotel, room: room });
+    res.status(200).json({ data: hotel, room: room });
   } catch (error) {
     console.log("Error fetching hotel data ::::", error);
     res.status(500).json({ message: "Internal server error" });
@@ -261,10 +282,11 @@ export async function updateHotelData(req, res) {
       checkOutTime,
       isActive,
     } = req.body;
+    const hotelId = req.params.id;
 
     const imageFiles = req.files?.images;
 
-    const hotel = await Hotel.findById(req.body._id);
+    const hotel = await Hotel.findById(hotelId);
     if (!hotel) {
       return res.status(404).json({ message: "hotel not found" });
     }
@@ -313,6 +335,7 @@ export async function updateHotelData(req, res) {
     );
 
     res.status(200).json({
+      success: true,
       message: "Hotel successfully updated",
       hotel: updatedhotel,
     });
@@ -321,3 +344,32 @@ export async function updateHotelData(req, res) {
     res.status(500).json({ message: "Internal server error" });
   }
 }
+
+// Delete Hotel Data
+
+export const deleteHotelById = async (req, res) => {
+  const hotelId = req.params.id;
+
+  try {
+    const deletedHotel = await Hotel.findByIdAndDelete(hotelId);
+
+    if (!deletedHotel) {
+      return res.status(404).json({
+        success: false,
+        message: "Hotel not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Hotel deleted successfully",
+      data: deletedHotel,
+    });
+  } catch (error) {
+    console.error("Error deleting hotel:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
