@@ -41,10 +41,12 @@ export async function registeruser(req, res) {
 
     await newUser.save();
 
-    res.status(201).json({ message: "User successfully registered" });
+    res
+      .status(201)
+      .json({ success: true, message: "User successfully registered" });
   } catch (error) {
     console.log("ERROR CREATING USER :::", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
 
@@ -93,7 +95,7 @@ export async function loginuser(req, res) {
 }
 
 export async function userLogout(req, res) {
-  res.status(200).json({ message: "Logged out successfully" });
+  res.status(200).json({ success: true, message: "Logged out successfully" });
 }
 
 export async function updateuser(req, res) {
@@ -136,11 +138,12 @@ export async function updateuser(req, res) {
     }).select("-password");
 
     res.status(200).json({
+      success: true,
       message: "User successfully updated",
       user: updatedUser,
     });
   } catch (error) {
     console.error("Update user error:", error);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 }

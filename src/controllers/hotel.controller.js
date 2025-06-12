@@ -116,7 +116,8 @@ export async function createRoom(req, res) {
         payment,
         booked,
       } = req.body;
-      const imageFile = req.files?.image;
+      const imageFile = req.files.image;
+      console.log("Uploaded files:", req.files);
 
       const finalAmount = price - price * (discount / 100);
 
@@ -129,7 +130,7 @@ export async function createRoom(req, res) {
       if (!hotel) {
         return res
           .status(404)
-          .json({ message: "Hotel not found for this owner" });
+          .json({ success: false, message: "Hotel not found for this owner" });
       }
 
       const newRoom = new Room({
@@ -145,16 +146,17 @@ export async function createRoom(req, res) {
         image: imagePath,
       });
       await newRoom.save();
-      res.status(201).json({ message: "Room created" });
+      res.status(201).json({ success: true, message: "Room created" });
     } else {
       console.log("Owner is not verified or domain dosen't matched");
-      res
-        .status(404)
-        .json({ message: "Owner is not verified or domain dosen't matched" });
+      res.status(404).json({
+        success: false,
+        message: "Owner is not verified or domain dosen't matched",
+      });
     }
   } catch (error) {
     console.log("Cant create Room Data");
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
 

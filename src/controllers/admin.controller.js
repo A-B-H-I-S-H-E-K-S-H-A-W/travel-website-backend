@@ -164,12 +164,14 @@ export async function updateadmin(req, res) {
       }
     ).select("-password");
 
-    res
-      .status(200)
-      .json({ message: "Admin successfully updated", admin: updatedAdmin });
+    res.status(200).json({
+      success: true,
+      message: "Admin successfully updated",
+      admin: updatedAdmin,
+    });
   } catch (error) {
     console.log("Can't update admin ::::", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
 
