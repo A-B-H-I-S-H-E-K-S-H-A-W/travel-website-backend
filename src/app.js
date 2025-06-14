@@ -31,6 +31,6 @@ app.use("/api/bus", busRouter);
 app.use("/api/hotel", hotelRouter);
 app.use("/api/flight", flightRouter);
 app.use("/api/booking", bookingRouter);
-app.use("/fetch", fetchRouter);
+app.use("/api/fetch", fetchRouter);
 
 export default app;

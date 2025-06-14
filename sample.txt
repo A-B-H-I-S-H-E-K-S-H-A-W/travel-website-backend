@@ -1,0 +1,17 @@
+<div
+            className="shrink-0 relative z-0 w-full cursor-pointer"
+            style={{ width: `${100 / visibleCards}%` }}
+          >
+            <div className="md:h-[22rem] sm:h-[18rem] h-[16rem] bg-white rounded-lg shadow-md border border-gray-200 transition-all hover:shadow-lg overflow-hidden">
+              <img
+                className="w-full h-full rounded-lg object-cover"
+                src={""}
+                alt="cover"
+              />
+              <div className="inset-0 absolute z-10 flex rounded-lg p-4 justify-start items-end bg-gradient-to-b from-transparent to-black/80 text-white duration-300">
+                <p className="text-xl font-semibold text-center px-2">
+                  {"No title"}
+                </p>
+              </div>
+            </div>
+          </div>

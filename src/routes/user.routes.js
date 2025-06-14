@@ -13,5 +13,5 @@ export const userRouter = Router();
 userRouter.post("/auth", loginuser);
 userRouter.post("/register", registeruser);
 userRouter.get("/:id", authenticate("user"), getuser);
-userRouter.post("/update", authenticate("user"), updateuser);
+userRouter.put("/update/:id", authenticate("user"), updateuser);
 userRouter.get("/logout", userLogout);

@@ -8,14 +8,14 @@ import UnlinkFile from "../utils/UnlinkFile.js";
 
 export async function getuser(req, res) {
   try {
-    const { id } = req.param;
-    const user = await User.findById(id, "-password");
+    const { id } = req.params;
+    const user = await User.findById({ _id: id }).select("-password");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.status(200).json(user);
+    res.status(200).json({ data: user });
   } catch (error) {
     console.log("Error fetching user");
     res.status(500).json({ message: "Internal server error" });
@@ -75,7 +75,12 @@ export async function loginuser(req, res) {
             success: true,
             message: "Login Successfully",
             token,
-            user: { id: user._id, username: user.username, email: user.email },
+            user: {
+              id: user._id,
+              username: user.username,
+              email: user.email,
+              avatar: user.avatar,
+            },
           });
         } else {
           res.status(400).json({
@@ -124,7 +129,9 @@ export async function updateuser(req, res) {
       pincode,
     };
 
-    const user = await User.findById(req.user.id);
+    const id = req.params.id;
+
+    const user = await User.findById(id);
 
     if (avatar) {
       UnlinkFile(user.avatar);
