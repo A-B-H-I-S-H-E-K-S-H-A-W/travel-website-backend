@@ -12,8 +12,8 @@ import {
 export const flightRouter = Router();
 
 flightRouter.post("/create", authenticate("admin"), createFlight);
-flightRouter.get("/flights", authenticate("admin"), getFlightData);
+flightRouter.get("/list", authenticate("admin"), getFlightData);
 flightRouter.get("/:id", getSingleFlightData);
 flightRouter.post("/active-flights", getActiveFlightData);
 flightRouter.delete("/delete/:id", authenticate("admin"), deleteFlightData);
-flightRouter.put("/update", authenticate("admin"), updateFlightData);
+flightRouter.put("/update/:id", authenticate("admin"), updateFlightData);

@@ -115,8 +115,8 @@ const roomSchema = Schema(
       required: true,
       enum: ["Book now and pay online", "Book now and pay at hotel"],
     },
-    image: {
-      type: String,
+    images: {
+      type: [String],
       required: true,
     },
     totalRooms: {

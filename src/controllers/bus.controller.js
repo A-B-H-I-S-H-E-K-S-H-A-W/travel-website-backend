@@ -66,16 +66,17 @@ export async function createBus(req, res) {
       await newBus.save();
 
       res.status(201).json({
+        success: true,
         message: "Bus scheduled successfully",
-        bus: newBus,
-        owner: owner,
       });
     } else {
-      res.status(404).json({ message: "Admin is not verified" });
+      res
+        .status(404)
+        .json({ success: false, message: "Admin is not verified" });
     }
   } catch (error) {
     console.log("Error creating bus schedule ::::", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
 
@@ -90,7 +91,7 @@ export async function getBusData(req, res) {
       return res.status(400).json({ message: "No bus data found" });
     }
 
-    res.status(200).json(buses);
+    res.status(200).json({ success: true, data: buses });
   } catch (error) {
     console.log("Error fetching bus data ::::", error);
     res.status(500).json({ message: "Internal server error" });
@@ -103,13 +104,15 @@ export async function getSingleBusData(req, res) {
     const bus = await Bus.findById(busId).populate("owner", "-password");
 
     if (!bus) {
-      return res.status(400).json({ message: "Bus not found" });
+      return res.status(400).json({ success: false, message: "Bus not found" });
     }
 
-    res.status(200).json(bus);
+    res
+      .status(200)
+      .json({ success: true, message: "Fetched Bus data", data: bus });
   } catch (error) {
     console.log("Error fetching bus data ::::", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
 
@@ -152,10 +155,12 @@ export async function deleteBusData(req, res) {
   try {
     const busId = req.params.id;
 
-    const bus = await Bus.findById(busId);
+    const bus = await Bus.findById({ _id: busId });
 
     if (!bus) {
-      return res.status(404).json({ message: "Sheduled bus not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Sheduled bus not found" });
     }
 
     for (const image of bus.images) {
@@ -169,10 +174,10 @@ export async function deleteBusData(req, res) {
 
     await Bus.findByIdAndDelete(busId);
 
-    res.status(200).json({ message: "Deleted bus schedule" });
+    res.status(200).json({ success: true, message: "Deleted bus schedule" });
   } catch (error) {
     console.log("Error deleting bus data ::::", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
 
@@ -194,9 +199,11 @@ export async function updateBusData(req, res) {
 
     const imageFiles = req.files?.images;
 
-    const bus = await Bus.findById(req.body._id);
+    const busId = req.params.id;
+
+    const bus = await Bus.findById({ _id: busId });
     if (!bus) {
-      return res.status(404).json({ message: "Bus not found" });
+      return res.status(404).json({ success: false, message: "Bus not found" });
     }
 
     const imagePath = [];
@@ -239,11 +246,12 @@ export async function updateBusData(req, res) {
       runValidators: true,
     });
 
-    res
-      .status(200)
-      .json({ message: "Bus schedule successfully updated", bus: updatedBus });
+    res.status(200).json({
+      success: true,
+      message: "Bus schedule successfully updated",
+    });
   } catch (error) {
     console.log("Error updating bus data ::::", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 }

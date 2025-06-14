@@ -27,11 +27,11 @@ const busSchema = new Schema(
       uppercase: true,
     },
     departureTime: {
-      type: Date,
+      type: String,
       required: true,
     },
     arrivalTime: {
-      type: Date,
+      type: String,
       required: true,
     },
     duration: {
@@ -51,14 +51,14 @@ const busSchema = new Schema(
       required: true,
     },
     busType: {
-      type: [String],
+      type: String,
       required: true,
       enum: ["AC Sleeper", "Non-AC Seater", "Sleeper", "AC Seater"],
     },
     operatingDays: {
       type: [String],
       required: true,
-      enum: ["Mon", "Tue", "Wed", "Thus", "Fri", "Sat", "Sun"],
+      enum: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     },
     images: {
       type: [String],

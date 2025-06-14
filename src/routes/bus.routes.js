@@ -18,4 +18,4 @@ busRouter.post("/active-buses", getActiveBusData);
 busRouter.get("/all-buses", authenticate("user"), getAllBusData);
 busRouter.get("/:id", getSingleBusData);
 busRouter.delete("/delete/:id", authenticate("admin"), deleteBusData);
-busRouter.put("/update", authenticate("admin"), updateBusData);
+busRouter.put("/update/:id", authenticate("admin"), updateBusData);

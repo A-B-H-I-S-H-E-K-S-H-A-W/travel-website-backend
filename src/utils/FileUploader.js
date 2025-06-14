@@ -21,7 +21,7 @@ async function FileUploader(image) {
     const result = await cloudinary.uploader.upload(uploadPath, {
       folder: "uploads",
       public_id: uniqueName,
-      resource_type: "raw", // add this for raw files like PDFs
+      resource_type: "auto",
     });
 
     fs.unlinkSync(uploadPath);

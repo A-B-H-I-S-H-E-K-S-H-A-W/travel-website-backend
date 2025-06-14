@@ -4,7 +4,9 @@ import {
   createRoom,
   deleteHotelById,
   deleteRoomData,
+  fetchAdminRoomData,
   getActiveHotelData,
+  getAllAdminHotels,
   getAllHotels,
   getSingleHotelData,
   updateHotelData,
@@ -16,11 +18,13 @@ export const hotelRouter = Router();
 
 // Hotel Registration // about hotel
 hotelRouter.post("/create", authenticate("admin"), createHotel);
-hotelRouter.get("/list", authenticate("admin"), getAllHotels);
+hotelRouter.get("/list", authenticate("admin"), getAllAdminHotels);
+hotelRouter.get("/list-all", authenticate("admin"), getAllHotels);
 // Create room for hotels
 hotelRouter.post("/create-room", authenticate("admin"), createRoom);
-hotelRouter.delete("/delete/delete/:id", authenticate("admin"), deleteRoomData);
+hotelRouter.delete("/room/delete/:id", authenticate("admin"), deleteRoomData);
 hotelRouter.put("/room/update/:id", authenticate("admin"), updateRoomData);
+hotelRouter.get("/room/list", authenticate("admin"), fetchAdminRoomData);
 
 // For user
 hotelRouter.post("/active-hotels", getActiveHotelData);

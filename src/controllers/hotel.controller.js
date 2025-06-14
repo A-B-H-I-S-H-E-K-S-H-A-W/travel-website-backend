@@ -38,7 +38,9 @@ export async function createHotel(req, res) {
       let imagePath = [];
 
       if (!imageFiles) {
-        return res.status(400).json({ message: "No images uploaded" });
+        return res
+          .status(400)
+          .json({ success: false, message: "No images uploaded" });
       }
 
       if (Array.isArray(imageFiles)) {
@@ -84,13 +86,23 @@ export async function createHotel(req, res) {
     }
   } catch (error) {
     console.log("Can't create Hotel Data", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
 
 export const getAllHotels = async (req, res) => {
   try {
     const hotels = await Hotel.find(); // You can add filters like .find({ city: req.query.city })
+    res.status(200).json({ success: true, data: hotels });
+  } catch (error) {
+    console.error("Error fetching hotels:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+export const getAllAdminHotels = async (req, res) => {
+  try {
+    const hotels = await Hotel.find({ owner: req.user.id }); // assuming owner = admin's ID
     res.status(200).json({ success: true, data: hotels });
   } catch (error) {
     console.error("Error fetching hotels:", error);
@@ -108,6 +120,7 @@ export async function createRoom(req, res) {
 
     if (owner.verification === "Verified" && owner.domain === "Hotel") {
       const {
+        hotel,
         bedType,
         maxPerson,
         facilities,
@@ -115,17 +128,28 @@ export async function createRoom(req, res) {
         price,
         payment,
         booked,
+        totalRooms,
       } = req.body;
-      const imageFile = req.files.image;
-      console.log("Uploaded files:", req.files);
+      const imageFiles = req.files?.images;
+      let imagePath = [];
+
+      if (!imageFiles) {
+        return res
+          .status(400)
+          .json({ success: false, message: "No images uploaded" });
+      }
+
+      if (Array.isArray(imageFiles)) {
+        for (const image of imageFiles) {
+          const fileName = await FileUploader(image);
+          imagePath.push(fileName);
+        }
+      } else {
+        const fileName = await FileUploader(imageFiles);
+        imagePath.push(fileName);
+      }
 
       const finalAmount = price - price * (discount / 100);
-
-      let imagePath = "";
-      if (imageFile) {
-        imagePath = await FileUploader(imageFile);
-      }
-      const hotel = await Hotel.findOne({ owner: req.user.id });
 
       if (!hotel) {
         return res
@@ -134,16 +158,17 @@ export async function createRoom(req, res) {
       }
 
       const newRoom = new Room({
-        hotel: hotel._id,
+        hotel: hotel,
         bedType,
-        maxPerson,
+        maxPerson: parseInt(maxPerson),
+        price: parseFloat(price),
+        discount: parseFloat(discount),
         facilities,
-        discount,
-        price,
         discountedAmount: finalAmount,
         payment,
         booked,
-        image: imagePath,
+        totalRooms: parseInt(totalRooms),
+        images: imagePath,
       });
       await newRoom.save();
       res.status(201).json({ success: true, message: "Room created" });
@@ -155,7 +180,37 @@ export async function createRoom(req, res) {
       });
     }
   } catch (error) {
-    console.log("Cant create Room Data");
+    console.log("Cant create Room Data", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+}
+
+export async function fetchAdminRoomData(req, res) {
+  try {
+    const hotels = await Hotel.find({ owner: req.user.id });
+
+    if (!hotels || hotels.length === 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No hotels found for this admin" });
+    }
+
+    const hotelIds = hotels.map((h) => h._id);
+
+    const rooms = await Room.find({ hotel: { $in: hotelIds } }).populate(
+      "hotel"
+    );
+
+    if (!rooms || rooms.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No rooms found for this admin's hotels",
+      });
+    }
+
+    res.status(200).json({ success: true, data: rooms });
+  } catch (error) {
+    console.error("Can't fetch Room Data", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
@@ -169,18 +224,20 @@ export async function deleteRoomData(req, res) {
     const room = await Room.findById(roomId);
 
     if (!room) {
-      return res.status(404).json({ message: "Room data not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Room data not found" });
     }
 
-    const image = room.image;
-    UnlinkFile(image);
+    const images = room.images;
+    UnlinkFile(images);
 
     await Room.findByIdAndDelete(roomId);
 
-    res.status(200).json({ message: "Room data got deleted" });
+    res.status(200).json({ success: true, message: "Deleted room data" });
   } catch (error) {
     console.log("Cant delete Room Data");
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
 
@@ -188,15 +245,26 @@ export async function deleteRoomData(req, res) {
 
 export async function updateRoomData(req, res) {
   try {
-    const { bedType, maxPerson, facilities, discount, price, payment, booked } =
-      req.body;
+    const {
+      hotel,
+      bedType,
+      maxPerson,
+      facilities,
+      discount,
+      price,
+      payment,
+      booked,
+      totalRooms,
+    } = req.body;
 
-    const imageFile = req.files?.image;
+    const imageFile = req.files?.images;
     const room = await Room.findById(req.body._id);
-    let imagePath = room.image;
+    let imagePath = room.images;
 
     if (!room) {
-      return res.status(400).json({ message: "Room not found" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Room not found" });
     }
 
     if (imageFile) {
@@ -207,6 +275,7 @@ export async function updateRoomData(req, res) {
     const finalAmount = price - price * (discount / 100);
 
     const updateRoom = {
+      hotel,
       bedType,
       maxPerson,
       facilities,
@@ -215,16 +284,17 @@ export async function updateRoomData(req, res) {
       discountedAmount: finalAmount,
       payment,
       booked,
-      image: imagePath,
+      totalRooms,
+      images: imagePath,
     };
     await Room.findByIdAndUpdate(req.body._id, updateRoom, {
       new: true,
       runValidators: true,
     });
-    res.status(201).json({ message: "Room updated" });
+    res.status(201).json({ success: true, message: "Room updated" });
   } catch (error) {
     console.log("Cant update Room Data");
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
 

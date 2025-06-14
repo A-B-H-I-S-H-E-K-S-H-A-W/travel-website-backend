@@ -8,7 +8,7 @@ export async function createFlight(req, res) {
   try {
     const owner = await Admin.findOne({ _id: req.user.id }).select("-password");
 
-    if (owner.verification === "Not Verified" && owner.domain === "Flight") {
+    if (owner.verification === "Verified" && owner.domain === "Flight") {
       const {
         flightNumber,
         airline,
@@ -32,7 +32,9 @@ export async function createFlight(req, res) {
       let imagePath = [];
 
       if (!imageFiles) {
-        return res.status(400).json({ message: "No images uploaded" });
+        return res
+          .status(400)
+          .json({ success: false, message: "No images uploaded" });
       }
 
       if (Array.isArray(imageFiles)) {
@@ -76,16 +78,18 @@ export async function createFlight(req, res) {
       await newFlight.save();
 
       res.status(201).json({
+        success: true,
         message: "Flight scheduled successfully",
       });
     } else {
-      res
-        .status(404)
-        .json({ message: "Admin is not verified or wrong domain" });
+      res.status(404).json({
+        success: false,
+        message: "Admin is not verified or wrong domain",
+      });
     }
   } catch (error) {
     console.log("Error creating flight schedule ::::", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
 
@@ -97,13 +101,15 @@ export async function getFlightData(req, res) {
     );
 
     if (flight.length === 0) {
-      return res.status(400).json({ message: "No flight data found" });
+      return res
+        .status(400)
+        .json({ success: false, message: "No flight data found" });
     }
 
-    res.status(200).json(flight);
+    res.status(200).json({ success: true, data: flight });
   } catch (error) {
     console.log("Error fetching flight data ::::", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
 
@@ -153,7 +159,9 @@ export async function deleteFlightData(req, res) {
     const flight = await Flight.findById(flightId);
 
     if (!flight) {
-      return res.status(404).json({ message: "Sheduled flight not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Sheduled flight not found" });
     }
 
     for (const image of flight.images) {
@@ -167,10 +175,10 @@ export async function deleteFlightData(req, res) {
 
     await Flight.findByIdAndDelete(flightId);
 
-    res.status(200).json({ message: "Deleted flight schedule" });
+    res.status(200).json({ success: true, message: "Deleted flight schedule" });
   } catch (error) {
     console.log("Error deleting flight data ::::", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
 
@@ -196,10 +204,13 @@ export async function updateFlightData(req, res) {
     } = req.body;
 
     const imageFiles = req.files?.images;
+    const flightId = req.params.id;
 
-    const flight = await Flight.findById(req.body._id);
+    const flight = await Flight.findById({ _id: flightId });
     if (!flight) {
-      return res.status(404).json({ message: "flight not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "flight not found" });
     }
 
     const imagePath = [];
@@ -244,16 +255,17 @@ export async function updateFlightData(req, res) {
       isActive,
     };
 
-    await Flight.findByIdAndUpdate(req.body._id, updateflight, {
+    await Flight.findByIdAndUpdate(flightId, updateflight, {
       new: true,
       runValidators: true,
     });
 
     res.status(200).json({
+      success: true,
       message: "flight schedule successfully updated",
     });
   } catch (error) {
     console.log("Error updating flight data ::::", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 }

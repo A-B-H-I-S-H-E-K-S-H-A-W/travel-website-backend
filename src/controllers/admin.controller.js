@@ -202,10 +202,9 @@ export async function verification(req, res) {
 
 export async function verificationUpdate(req, res) {
   try {
-    const { verificationUpdate } = req.body;
-    const id = req.user.id;
+    const { verificationUpdate, adminId } = req.body;
 
-    const admin = await Admin.find({ _id: id }).select("-password");
+    const admin = await Admin.find({ _id: adminId }).select("-password");
 
     if (admin.length === 0) {
       return res
@@ -217,7 +216,7 @@ export async function verificationUpdate(req, res) {
       verification: verificationUpdate,
     };
 
-    const updatedAdmin = await Admin.findByIdAndUpdate(id, updateAdmin, {
+    const updatedAdmin = await Admin.findByIdAndUpdate(adminId, updateAdmin, {
       new: true,
       runValidators: true,
     }).select("-password");
