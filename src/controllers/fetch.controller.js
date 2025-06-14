@@ -41,3 +41,49 @@ export async function getInfoById(req, res) {
     return { success: false, message: "Internal Server Error" };
   }
 }
+
+export async function fetchSearchData(req, res) {
+  try {
+    let { source, destination, person } = req.body;
+
+    if (!source || !destination) {
+      return res
+        .status(400)
+        .json({ message: "Source and destination are required." });
+    }
+
+    const passengerCount = parseInt(person) || 1;
+    const sourceNormalized = source.trim().toLowerCase();
+    const destinationNormalized = destination.trim().toLowerCase();
+
+    const flightResults = await Flight.find({
+      departureCity: { $regex: new RegExp(`^${sourceNormalized}$`, "i") },
+      arrivalCity: { $regex: new RegExp(`^${destinationNormalized}$`, "i") },
+      availableSeats: { $gte: passengerCount },
+      isActive: true,
+    });
+
+    const busResults = await Bus.find({
+      source: { $regex: new RegExp(`^${sourceNormalized}$`, "i") },
+      destination: { $regex: new RegExp(`^${destinationNormalized}$`, "i") },
+      availableSeats: { $gte: passengerCount },
+      isActive: true,
+    });
+
+    const hotelResults = await Hotel.find({
+      city: { $regex: new RegExp(`^${sourceNormalized}$`, "i") },
+      isActive: true,
+    });
+
+    return res.status(200).json({
+      flights: flightResults,
+      buses: busResults,
+      hotels: hotelResults,
+    });
+  } catch (error) {
+    console.error("Search error:", error);
+    return res
+      .status(500)
+      .json({ message: "Something went wrong during search." });
+  }
+}
