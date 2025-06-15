@@ -115,7 +115,7 @@ export async function updateuser(req, res) {
       state,
       pincode,
     } = req.body;
-    const avatar = req.files?.avatar;
+    const avatar = req.files.avatar;
 
     const updateUser = {
       username,
@@ -129,17 +129,20 @@ export async function updateuser(req, res) {
       pincode,
     };
 
+    console.log("req.files ===>", req.files);
+    console.log("req.body ===>", req.body);
+
     const id = req.params.id;
 
     const user = await User.findById(id);
 
     if (avatar) {
-      UnlinkFile(user.avatar);
-      const avatarPath = await FileUploader(avatar);
-      updateUser.avatar = avatarPath;
+      // const avatarPath = await FileUploader(avatar);
+      // updateUser.avatar = avatarPath;
+      console.log(avatar);
     }
 
-    const updatedUser = await User.findByIdAndUpdate(req.user.id, updateUser, {
+    const updatedUser = await User.findByIdAndUpdate({ _id: id }, updateUser, {
       new: true,
       runValidators: true,
     }).select("-password");

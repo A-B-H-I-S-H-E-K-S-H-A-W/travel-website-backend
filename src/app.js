@@ -13,12 +13,7 @@ import { fetchRouter } from "./routes/fetch.routes.js";
 const app = express();
 
 app.use(cors());
-app.use(
-  fileUpload({
-    useTempFiles: true,
-    tempFileDir: "/public/temp/",
-  })
-);
+app.use(fileUpload());
 app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
