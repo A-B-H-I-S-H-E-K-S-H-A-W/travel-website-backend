@@ -115,13 +115,11 @@ export async function updateuser(req, res) {
       state,
       pincode,
     } = req.body;
-    const avatar = req.files.avatar;
 
     const updateUser = {
       username,
       email,
       phoneNumber,
-      avatar,
       country,
       address,
       city,
@@ -129,18 +127,9 @@ export async function updateuser(req, res) {
       pincode,
     };
 
-    console.log("req.files ===>", req.files);
-    console.log("req.body ===>", req.body);
-
     const id = req.params.id;
 
     const user = await User.findById(id);
-
-    if (avatar) {
-      // const avatarPath = await FileUploader(avatar);
-      // updateUser.avatar = avatarPath;
-      console.log(avatar);
-    }
 
     const updatedUser = await User.findByIdAndUpdate({ _id: id }, updateUser, {
       new: true,
