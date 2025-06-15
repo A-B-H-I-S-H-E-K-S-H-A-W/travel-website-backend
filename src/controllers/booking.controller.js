@@ -1,66 +1,116 @@
 import { Booking } from "../models/booking.models.js";
 import { Bus } from "../models/bus.models.js";
 import { Flight } from "../models/flight.models.js";
+import { Hotel } from "../models/hotel.models.js"; // Assuming you have this
 
 export async function booking(req, res) {
   try {
     const { travelDate, bus, hotel, flight } = req.body;
+    const userId = req.user.id;
 
     const bookingTypes = [bus, hotel, flight].filter(Boolean);
     if (bookingTypes.length !== 1) {
-      return res.status(400).json({ message: "Chosen wrong domain" });
+      return res
+        .status(400)
+        .json({ message: "Choose only one domain to book" });
     }
 
-    let availableSeats = 0;
+    const existingBooking = await Booking.findOne({
+      travelDate: new Date(travelDate),
+      ...(bus && { bus }),
+      ...(hotel && { hotel }),
+      ...(flight && { flight }),
+    });
+
+    if (existingBooking) {
+      return res.status(400).json({
+        success: false,
+        message: "This item is already booked on the selected date.",
+      });
+    }
+
+    // Bus logic
     if (bus) {
       const busData = await Bus.findById(bus);
-
       if (!busData) {
-        return res.status(404).json({ message: "Bus not found" });
+        return res
+          .status(404)
+          .json({ success: false, message: "Bus not found" });
       }
 
       if (busData.availableSeats <= 0) {
         return res
           .status(400)
-          .json({ message: "No available seats on this bus" });
+          .json({ success: false, message: "No seats available on this bus" });
       }
-      const updatedSeats = busData.availableSeats - 1;
 
-      await Bus.findByIdAndUpdate(bus, { availableSeats: updatedSeats });
-
-      console.log(`Seat booked. Remaining seats: ${updatedSeats}`);
+      busData.availableSeats -= 1;
+      await busData.save();
     }
 
+    // Flight logic
     if (flight) {
       const flightData = await Flight.findById(flight);
-
       if (!flightData) {
-        return res.status(404).json({ message: "Flight not found" });
+        return res
+          .status(404)
+          .json({ success: false, message: "Flight not found" });
       }
 
       if (flightData.availableSeats <= 0) {
-        return res
-          .status(400)
-          .json({ message: "No available seats on this Flight" });
+        return res.status(400).json({
+          success: false,
+          message: "No seats available on this flight",
+        });
       }
-      const updatedSeats = flightData.availableSeats - 1;
 
-      await Flight.findByIdAndUpdate(flight, { availableSeats: updatedSeats });
-      console.log(`Seat booked. Remaining seats: ${updatedSeats}`);
+      flightData.availableSeats -= 1;
+      await flightData.save();
+    }
+
+    // Hotel logic (completely unavailable after booking on a date)
+    if (hotel) {
+      const hotelData = await Hotel.findById(hotel);
+      if (!hotelData) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Hotel not found" });
+      }
+
+      // Optionally: Add a boolean to mark as booked if you want
+      // For now, just relying on Booking collection check above
     }
 
     const newBooking = new Booking({
-      user: req.user.id,
-      travelDate,
+      user: userId,
+      travelDate: new Date(travelDate),
       bus: bus || null,
       hotel: hotel || null,
       flight: flight || null,
     });
 
     await newBooking.save();
-    res.status(201).json({ message: "Booking Done" });
+
+    res.status(201).json({ success: true, message: "Booking completed" });
   } catch (error) {
-    console.log("Error at booking ::::", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error at booking ::::", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
+
+export const getUserBookings = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const bookings = await Booking.find({ user: userId })
+      .populate("bus")
+      .populate("hotel")
+      .populate("flight")
+      .sort({ travelDate: -1 });
+
+    res.status(200).json({ success: true, data: bookings });
+  } catch (error) {
+    console.error("Error fetching bookings by ID:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
