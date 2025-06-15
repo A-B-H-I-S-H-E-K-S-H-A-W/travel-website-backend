@@ -241,7 +241,7 @@ export async function updateBusData(req, res) {
       isActive,
     };
 
-    const updatedBus = await Bus.findByIdAndUpdate(req.body._id, updateBus, {
+    const updatedBus = await Bus.findByIdAndUpdate({ _id: busId }, updateBus, {
       new: true,
       runValidators: true,
     });
