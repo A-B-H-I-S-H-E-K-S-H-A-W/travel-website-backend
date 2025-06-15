@@ -114,3 +114,27 @@ export const getUserBookings = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+export const deleteBookingById = async (req, res) => {
+  try {
+    const bookingId = req.params.id;
+
+    const booking = await Booking.findById(bookingId);
+    if (!booking) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Booking not found" });
+    }
+
+    await Booking.findByIdAndDelete(bookingId);
+    return res
+      .status(200)
+      .json({ success: true, message: "Booking deleted successfully" });
+  } catch (error) {
+    const bookingId = req.params.id;
+    console.log(bookingId);
+
+    console.error("Delete booking error:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
